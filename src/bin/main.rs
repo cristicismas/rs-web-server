@@ -1,30 +1,32 @@
 use std::io::prelude::*;
 use std::net::{TcpListener, TcpStream};
 use std::fs;
+use rs_web_server::ThreadPool;
 
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
+    let pool = ThreadPool::new(4);
 
     for stream in listener.incoming() {
         let stream = stream.unwrap();
 
-        handle_connection(stream);
+        pool.execute(|| {
+            handle_connection(stream);
+        });
     }
 }
 
 fn handle_connection(mut stream: TcpStream) {
     let mut buffer = [0; 1024];
 
-    read_and_print_connection(&mut stream, &mut buffer);
+    read_connection(&mut stream, &mut buffer);
 
     respond_with_html(&mut stream, buffer);
 
 }
 
-fn read_and_print_connection(stream: &mut TcpStream, buffer: &mut [u8; 1024]) {
+fn read_connection(stream: &mut TcpStream, buffer: &mut [u8; 1024]) {
     stream.read(buffer).unwrap();
-    
-    println!("Request: {}", String::from_utf8_lossy(&buffer[..]));
 }
 
 fn respond_with_html(stream: &mut TcpStream, buffer: [u8; 1024]) {

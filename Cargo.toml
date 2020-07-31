@@ -1,5 +1,5 @@
 [package]
-name = "rs-web-server"
+name = "rs_web_server"
 version = "0.1.0"
 authors = ["Cristi Cismas <cristicismas99@gmail.com>"]
 edition = "2018"
